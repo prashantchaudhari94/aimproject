@@ -1,0 +1,74 @@
+{% extends "base.html" %} {% set active_page = "calibration" %} 
+{% block content%}
+
+<div class="container-fluid text-center">
+  <div class="row content">
+    <div class="col-sm-2 sidenav">
+    </div>
+    <div class="col-sm-9 text-left">
+      <h3>Enquiry Visit</h3>
+      <form id="myForm" action="/enq_visit" method="post">
+        <table>
+          <tr>
+            <th style="width: 35%">Item</th>
+            <th style="width: 50%">Details</th>
+          <tr>
+            <td>Party Name</td>
+            <td><input type="text" name="name" class="form-control" value={{party_name}} readonly/></td>
+          </tr>
+          <tr>
+            <td>Enquiry Number</td>
+            <td><input type="text" name="recid" class="form-control" value={{recid}} readonly /></td>
+          </tr>
+          <tr>
+            <td>Prefered Visit Date</td>
+            <td><input type="date" name="p_visit_date" id="datefield" class="form-control" required /></td>
+          </tr>
+          <tr>
+            <td>Executive Assign</td>
+            <td>
+              
+              <select name="exe_name" id="cars" required>
+               
+                <option value=""></option>
+              
+                {% for row in executive_names %}
+
+                
+                <option value="{{row[0]}} {{row[1]}}">{{row[0]}} {{row[1]}}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Article List</td>
+            <td><input type="text" name="article" class="form-control" required/></td>
+          </tr>
+         
+          <tr>
+            <td><input type="reset"  value="Reset" /></td>
+            <td><input type="submit" id="insert" name="insert" value="Save Visit deails" /></td>
+          </tr>
+          <tbody>
+    </div>
+   
+    </tbody>
+    </table>
+    </form>
+    <script>
+      var today = new Date();
+      var dd = today.getDate();
+      var mm = today.getMonth()+1; //January is 0 so need to add 1 to make it 1!
+      var yyyy = today.getFullYear();
+      if(dd<10){
+        dd='0'+dd
+      } 
+      if(mm<10){
+        mm='0'+mm
+      } 
+    today = yyyy+'-'+mm+'-'+dd;
+    document.getElementById("datefield").setAttribute("min", today);
+    </script>
+    {% endblock %}
+  </div>
+</div>

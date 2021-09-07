@@ -1,0 +1,130 @@
+
+{% extends "base.html" %} {% set active_page = "calibration" %} {% block content
+    %}
+    
+    <div class="container-fluid text-center">
+      <div class="row content">
+        <div class="col-sm-2 sidenav">
+          
+        </div>
+        <div class="col-sm-9 text-left">
+          
+          <h3>Quotation Submission</h3>
+        
+        <form id="myForm" action="/quot_save" method="post">
+          <table>
+            <tr>
+              <th style="width: 35%">Item</th>
+              <th style="width: 50%">Details</th>
+            <tr>
+              <td>Party Name</td>
+              <td><input type="text" name="party_name" class="form-control" value={{party_name}} readonly></td>
+            </tr>
+            <tr>
+                <td>Enquiry Number</td>
+                <td><input type="text" name="recid" class="form-control" value={{recid}} readonly></td>
+            </tr>
+            <tr>
+              <td>Visit Number</td>
+              <td><input type="text" name="visit_no" class="form-control" value={{visit_no}} readonly></td>
+          </tr>
+            <tr>
+              <td>Quotation Date</td>
+              <td><input type="date" name="quot_date" id="datefield"  class="form-control" value={{today1}} ></td>
+            </tr>
+            <tr>
+              <td>Address Loading</td>
+              <td><input type="text" name="alist" class="form-control" value={{address_loading}} readonly/></td>
+            </tr>
+          
+            <tr>
+              <td>Address Unloading</td>
+              <td><input type="text" name="alist" class="form-control" value={{address_unloading}} readonly /></td>
+            </tr>
+            <tr>
+              <td>Details</td>
+              <td><input type="text" name="details" class="form-control" value="" required /></td>
+            </tr>
+            
+           
+            <tr>
+              <td> <label for="exampleFormControlTextarea1" aria-required="true">Offer Details</label></td>
+              <td><textarea name="offer_details" class="form-control" value="" id="exampleFormControlTextarea1" rows="3" required></textarea></td>
+
+            </tr>
+            <tr>
+                <td>Charges Type</td>
+                <td>
+                <select name="charges_type" id="charges_type" required>
+                  <option value=""></option>
+                  <option value="Type 1">Type 1</option>
+                  <option value="Type 2">Type 2</option>
+                  <option value="Type 3">Type 3</option>
+                <!--{% for row in executive_names %}
+                <option value={{row[2]}}>{{row[1]}} {{row[0]}}</option>
+                {% endfor %} -->  
+                </select>    
+                </td>
+            </tr>  
+
+            <tr>
+              <td>Amount Rs.</td>
+              <td><input type="text" name="amount" class="form-control" value="" onkeypress="isInputNumber(event)" required ></td>
+            </tr>
+            <tr>    
+              <td>Taxes. </td>
+              <td><input type="text" name="tax" class="form-control" value="" onkeypress="isInputNumber(event)" required></td>
+            </tr>
+          
+            <tr>
+              <td>Invoice Required</td>
+              <td>
+              
+                 <input type="radio" id="required" name="invoice_req"  value="Required" required>
+                 <label for="required">Required</label><br>
+                 <input type="radio" id="not required" name="invoice_req" value="Not Required" required>
+                 <label for="not required">Not Required</label><br>
+              </td>
+            </tr>
+            <tr>
+                    <td><input type="reset"  value="Reset" /></td>
+                    <td><input type="submit" id="insert" name="insert" value="Save Quotation" /></td>
+            </tr>
+                  <tbody>
+                  </div>
+                  </tbody>
+                </table>
+              </form>
+              <script>
+            
+
+              function isInputNumber(evt){
+                
+                var ch = String.fromCharCode(evt.which);
+                
+                if(!(/[0-9]/.test(ch))){
+                    evt.preventDefault();
+                }
+                
+            }
+
+
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0 so need to add 1 to make it 1!
+                var yyyy = today.getFullYear();
+                if(dd<10){
+                  dd='0'+dd
+                } 
+                if(mm<10){
+                  mm='0'+mm
+                } 
+              today = yyyy+'-'+mm+'-'+dd;
+              document.getElementById("datefield").setAttribute("min", today);
+             
+    
+
+              </script>
+            </div>
+          </div>
+          {% endblock %}
