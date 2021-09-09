@@ -228,7 +228,7 @@ def open_enq():
                 print ("enq_id = ", enquiry_no_id, memo_data)
                 #return ("Page with work memo values.",enquiry_no_id)
             if not len(data_enqid) is 0 :                     #NOT 0. memo already exists. only show memo
-                return render_template('memo_display.html',memo_data=data_enqid, recid=recid) 
+                return render_template('memo_display.html',memo_data=data_enqid, party_name=party_name, recid=recid) 
             else :                                 # New memo. Collect values
                 return render_template('memo_form.html', data=data, recid=recid, party_name=party_name, address_loading=address_loading, address_unloading=address_unloading, visit_no = visit_no, today1=today1 )             
         except :
