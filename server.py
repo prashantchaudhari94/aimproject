@@ -16,6 +16,30 @@ app.config['MYSQL_PASSWORD'] = 'pc@soft94'
 app.config['MYSQL_DB'] = 'packer'
 mysql = MySQL(app)
 
+#loginpage
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    msg = ''
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM accounts WHERE username = % s AND password = % s' , (username, password, ))
+        account = cursor.fetchone()
+
+        
+        if account:
+            session['loggedin'] = True
+            session['username'] = account[0]
+            return redirect(url_for('disp_table'))
+        else:
+            msg = 'Incorrect username or password !'
+
+    return render_template('login.html', msg=msg)
+
+
+
+
 @app.route('/', methods=['GET', 'POST'])
 def disp_table():
     
@@ -309,6 +333,12 @@ def quot_save():
     mysql.connection.commit()
     #return ("Quotation saved")
     return redirect(url_for('disp_table'))
+
+@app.route('/logout',methods=['GET', 'POST'])
+def logout():
+    session.pop('loggedin',None)
+    session.pop('username',None)
+    return redirect(url_for('login'))    
 
 if __name__ == "__main__":
 #    app.run(host='192.168.1.200', port=5000, debug=True)
