@@ -16,6 +16,10 @@ app.config['MYSQL_PASSWORD'] = 'pc@soft94'
 app.config['MYSQL_DB'] = 'packer'
 mysql = MySQL(app)
 
+@app.route("/")
+def home():
+    return render_template("login.html")
+
 #loginpage
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -24,13 +28,13 @@ def login():
         username = request.form['username']
         password = request.form['password']
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM accounts WHERE username = % s AND password = % s' , (username, password, ))
+        cursor.execute('SELECT * FROM user WHERE username = %s AND password = %s' , (username, password, ))
         account = cursor.fetchone()
 
         
         if account:
             session['loggedin'] = True
-            session['username'] = account[0]
+            session['username'] = account[1]
             return redirect(url_for('disp_table'))
         else:
             msg = 'Incorrect username or password !'
@@ -38,9 +42,36 @@ def login():
     return render_template('login.html', msg=msg)
 
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    msg = ''
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM user WHERE username = % s', (username, ))
+        account = cursor.fetchone()
+        if account:
+            msg = 'Account already exists !'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address !'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only characters and numbers !'
+        elif not username or not password or not email:
+            msg = 'Please fill out the form !'
+        else:
+            cursor.execute('INSERT INTO user (username, password, email) VALUES (% s, % s, % s)',
+                           (username, password, email))
+            mysql.connection.commit()
+            msg = 'User successfully registered !'
+    elif request.method == 'POST':
+        msg = 'Please fill out the form !'
+    return render_template('register.html', msg=msg)
 
 
-@app.route('/', methods=['GET', 'POST'])
+
+@app.route('/disp_table', methods=['GET', 'POST'])
 def disp_table():
     
     cursor = mysql.connection.cursor()
@@ -68,7 +99,7 @@ def disp_table():
         enquiry_no_id = row[0]
         memo_date = row[1]
     
-    return render_template('disp_table.html', data=data, memo_data=memo_data)
+    return render_template('disp_table.html', data=data, memo_data=memo_data, username=session['username'])
 
 
 
@@ -90,7 +121,7 @@ def material_select():
         enq_id = request.form.get('enq_number')    
     return render_template('material_selection.html', material_data=material_data, enq_id=enq_id)
 
-@app.route('/material_issued', methods=['GET', 'POST'])
+'''@app.route('/material_issued', methods=['GET', 'POST'])
 def material_issued():
     enq_id = request.form.get('enq_number')
     material_name=request.form.get('material_name')
@@ -102,6 +133,19 @@ def material_issued():
     cursor.execute('INSERT INTO material (material_id, Qty_issued) VALUES ( %s,%s)',(material_id,qty_issued))
     mysql.connection.commit()
     
+    print("AAA:",enq_id,insert,qty_issued)
+    return("Values are=",qty_issued)   
+'''
+@app.route('/material_issued', methods=['GET', 'POST'])
+def material_issued():
+    cursor = mysql.connection.cursor()
+    enq_id = request.form.get('enq_number')
+    #qty_issued=request.form.get('qty_issued') 
+    insert=request.form.get('insert')
+    #insert=request.form['insert']
+    qty_issued="QTY"
+    cursor.execute( 'INSERT INTO cost_table ( qty_issued ) values (%s)', ( qty_issued))
+    mysql.connection.commit()
     print("AAA:",enq_id,insert,qty_issued)
     return("Values are=",qty_issued)   
 
