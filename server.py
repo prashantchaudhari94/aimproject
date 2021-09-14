@@ -141,12 +141,12 @@ def material_issued():
     cursor = mysql.connection.cursor()
     enq_id = request.form.get('enq_number')
     #qty_issued=request.form.get('qty_issued') 
-    insert=request.form.get('insert')
+    insert_but=request.form.get('insert')
     #insert=request.form['insert']
     qty_issued="QTY"
-    cursor.execute( 'INSERT INTO cost_table ( qty_issued ) values (%s)', ( qty_issued))
+    cursor.execute( 'INSERT INTO cost_table (enq_id, qty_issued ) values (%s)', ( qty_issued))
     mysql.connection.commit()
-    print("AAA:",enq_id,insert,qty_issued)
+    print("AAA:",enq_id,insert_but,qty_issued)
     return("Values are=",qty_issued)   
 
         
