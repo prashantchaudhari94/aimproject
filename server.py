@@ -29,7 +29,7 @@ def login():
         password = request.form['password']
         #if user.uername==username and user.password==password:
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM user WHERE username = %s AND password = %s' , (username, password, ))
+        cursor.execute('SELECT * FROM user WHERE binary username = %s AND  binary password = %s' , (username, password, ))
         account = cursor.fetchone()
 
         
@@ -37,7 +37,6 @@ def login():
             session['loggedin'] = True
             session['id'] = account[0]
             session['username'] = account[1]
-            msg = 'Logged in successfully !'
             return redirect(url_for('disp_table'))
         else:
             msg = 'Incorrect username or password !'
@@ -89,11 +88,11 @@ def disp_table():
         cursor.execute("select enquiry1.*, visit.visit_no_id from enquiry1 left join visit ON enquiry1.enquiry_no_id = visit.enquiry_no_id;")
         data = cursor.fetchall()
         
-
+###########
         # if material table data is present then select 
         if "Material" in insert_but :
             #memo_list()
-            cursor.execute('select material_name,stock_UM from material')
+            cursor.execute('select material_id, material_name,stock_UM from material')
             material_data = cursor.fetchall()    
             return render_template('material_selection.html', material_data=material_data)
 
@@ -116,6 +115,7 @@ def material_select():
     if 'loggedin' in session:
         cursor = mysql.connection.cursor()
         enq_id = request.form.get('enq_number')
+        memo_id = request.form.get('memo_id')
         insert_but=""                        #When disp_list called directly there is no value to insert_but (gives error)
         insert_but=request.form.get('insert')
         if not insert_but :
@@ -124,9 +124,10 @@ def material_select():
         
         if "Material" in insert_but :
             #memo_list()
-            cursor.execute('select material_name,stock_UM from material')
+            cursor.execute('select material_id, material_name,stock_UM from material')
             material_data = cursor.fetchall()
-            enq_id = request.form.get('enq_number')    
+            enq_id = request.form.get('enq_number')   
+            memo_id= request.form.get('memo_id')
         return render_template('material_selection.html', material_data=material_data, enq_id=enq_id)
     else:
         return redirect(url_for('login'))
@@ -147,21 +148,85 @@ def material_issued():
     print("AAA:",enq_id,insert,qty_issued)
     return("Values are=",qty_issued)   
 '''
-@app.route('/material_issued', methods=['GET', 'POST'])
+'''@app.route('/material_issued', methods=['GET', 'POST'])
 def material_issued():
     cursor = mysql.connection.cursor()
-    enq_id = request.form.get('enq_number')
-    #qty_issued=request.form.get('qty_issued') 
+    enq_id = request.form.get('enq_number')  
+    qty_issued=request.form.get('qty_issued')
     insert_but=request.form.get('insert')
-    #insert=request.form['insert']
+    insert=request.form['insert']
     qty_issued="QTY"
-    cursor.execute( 'INSERT INTO cost_table (enq_id, qty_issued ) values (%s)', ( qty_issued))
+    cursor.execute( 'INSERT INTO cost_table ( qty_issued ) values (%s)', ( qty_issued))
     mysql.connection.commit()
     print("AAA:",enq_id,insert_but,qty_issued)
-    return("Values are=",qty_issued)   
+    return("Values are=",qty_issued)   '''
+
+'''@app.route('/material_issued', methods=['GET', 'POST'])
+def material_issued():
+    
+    enq_id = request.form.get('enq_number')
+    #memo_id = request.form.get('memo_id')
+    material_id = request.form.get('material_id')
+    total_stock=request.form.get('qty_in_stock')
+    qty_issued=request.form.get('qty_issued')
+    #lst=[material_id,total_stock,qty_issued]
+    #insert=request.form.get('insert')
+    
+    #material_id = request.form['material_id']
+    #insert_but=request.form['insert']
+    
+        #name = request.form['name']
+        #alist = request.form['alist']
+    #if submit_selected in 'Save Qty':
+    cost_table=""
+    row=""
+    rows=[]
+    cursor.execute( 'INSERT INTO cost_table (  material_id, total_stock, qty_issued ) values (%s, %s, %s)', (material_id, total_stock, qty_issued))
+    for  row in cursor:
+        rows.append(row)
+        print(row)
+    '''
 
         
+    
+   # sql="INSERT INTO cost_table(material_id, total_stock, qty_issued) values (%s,%s, %s)"
+   # val=[material_id,total_stock, qty_issued]
+    #( qty_issued),
+    #( qty_issued)]
+    #cursor.executemany(sql, val)
+    #mysql.connection.commit()
+    #return rows    
+    #return("values are",material_id, total_stock,qty_issued)
+    #return("Values are inserted",qty_issued)
+    #cursor.execute('select cost_id, material_id,total_stock, qty_issued from cost_table')
+    #stock_data = cursor.fetchall()        
+    #return(render_template('cost.html'));
+'''cursor = mysql.connection.cursor()
+   
+    t=(material_id, total_stock, qty_issued)
+    for row in t:
+        cursor.execute('INSERT INTO cost (  material_id, total_stock, qty_issued ) values (%s, %s, %s)',(material_id,total_stock,qty_issued))
+        mysql.connection.commit()
+    return "data inserted" '''
+    
+@app.route('/material_issued', methods=['GET', 'POST'])
+def material_issued():
+    enq_id = request.form.get('enq_number')
+    #memo_id = request.form.get('memo_id')
+    material_id = request.form.get('material_id')
+    total_stock=request.form.get('qty_in_stock')
+    qty_issued=request.form.get('qty_issued')
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    if request.method=="post":
+        for row in qty_issued:
+            cursor.execute('INSERT INTO cost (  material_id, total_stock, qty_issued ) values (%s, %s, %s)',(material_id,total_stock,qty_issued))
+            mysql.connection.commit()
+        print(enq_id,material_id,total_stock,qty_issued)  
+    return("Values are=",qty_issued)  
 
+
+    
+    
 
 
 @app.route('/page1/<my_var>')
