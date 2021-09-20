@@ -133,33 +133,7 @@ def material_select():
         return redirect(url_for('login'))
 
 
-'''@app.route('/material_issued', methods=['GET', 'POST'])
-def material_issued():
-    enq_id = request.form.get('enq_number')
-    material_name=request.form.get('material_name')
-    qty_issued=request.form.get('qty_issued') 
-    insert=request.form.get('insert')
-    #insert=request.form['insert']
-    #qty_issued="QTY"
-    cursor = mysql.connection.cursor()
-    cursor.execute('INSERT INTO material (material_id, Qty_issued) VALUES ( %s,%s)',(material_id,qty_issued))
-    mysql.connection.commit()
-    
-    print("AAA:",enq_id,insert,qty_issued)
-    return("Values are=",qty_issued)   
-'''
-'''@app.route('/material_issued', methods=['GET', 'POST'])
-def material_issued():
-    cursor = mysql.connection.cursor()
-    enq_id = request.form.get('enq_number')  
-    qty_issued=request.form.get('qty_issued')
-    insert_but=request.form.get('insert')
-    insert=request.form['insert']
-    qty_issued="QTY"
-    cursor.execute( 'INSERT INTO cost_table ( qty_issued ) values (%s)', ( qty_issued))
-    mysql.connection.commit()
-    print("AAA:",enq_id,insert_but,qty_issued)
-    return("Values are=",qty_issued)   '''
+
 
 '''@app.route('/material_issued', methods=['GET', 'POST'])
 def material_issued():
@@ -211,18 +185,17 @@ def material_issued():
     
 @app.route('/material_issued', methods=['GET', 'POST'])
 def material_issued():
-    enq_id = request.form.get('enq_number')
-    #memo_id = request.form.get('memo_id')
+    cursor = mysql.connection.cursor()
     material_id = request.form.get('material_id')
     total_stock=request.form.get('qty_in_stock')
     qty_issued=request.form.get('qty_issued')
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    if request.method=="post":
-        for row in qty_issued:
-            cursor.execute('INSERT INTO cost (  material_id, total_stock, qty_issued ) values (%s, %s, %s)',(material_id,total_stock,qty_issued))
-            mysql.connection.commit()
-        print(enq_id,material_id,total_stock,qty_issued)  
-    return("Values are=",qty_issued)  
+    submit_selected=request.form['insert']
+    #if submit_selected in 'Save Qty':
+   # t=[material_id,total_stock,qty_issued]
+    cursor.execute('INSERT INTO cost (  material_id, total_stock, qty_issued ) values (%s, %s, %s)',(material_id,total_stock,qty_issued))
+    mysql.connection.commit()
+    print(material_id,total_stock,qty_issued)  
+    return "daat inserted"  
 
 
     
