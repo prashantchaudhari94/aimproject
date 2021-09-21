@@ -195,7 +195,7 @@ def material_issued():
     cursor.execute('INSERT INTO cost (  material_id, total_stock, qty_issued ) values (%s, %s, %s)',(material_id,total_stock,qty_issued))
     mysql.connection.commit()
     print(material_id,total_stock,qty_issued)  
-    return "daat inserted"  
+    return "data inserted"  
 
 
     
