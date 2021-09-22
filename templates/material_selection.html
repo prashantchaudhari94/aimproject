@@ -7,7 +7,10 @@
     </div>
     <div class="col-sm-9 text-left">
 
-      <h3>Material Selection: Enq Id: {{enq_id}}</h3>
+      <h3>Material Selection: Enq Id: {{enq_id}}</h3> 
+      {% if message %}
+      <div class="alert alert - success">{{message}}</div>
+      {% endif %}
 
       <form id="myForm3" action="/material_issued" method="post">
         <!-- <form id="myForm3" method="GET" -->
@@ -20,21 +23,16 @@
             <th style="width: 25%">Quantity in stock</th>
             <th style="width: 35%">Qty Issued</th>
           </tr>
+
           
-
-
-            {% for row in material_data %}
+          {% for row in material_data %}
 
           <tr>
             
-            <td><input type="text" id="material_id" name="material_id" class="form-control" value="{{row[0]}}" required readonly></td>
-            <td><input type="text" id="material_name" name="material_name" class="form-control" value="{{row[1]}}" required readonly></td>
-            <td><input type="text" id="qty_in_stock" name="qty_in_stock" class="form-control" value="{{row[2]}}" required readonly></td>
-           <!-- <td>{{row[0]}}</td>
-            <td>{{row[1]}}</td>
-            <td>{{row[2]}}</td>-->
-            <!--change in input type-->
-            <td><input type="text" id="qty_issued" name="qty_issued" class="form-control" value="" required></td>
+            <td><input type="text" id="material_id" name="material_id[]" class="form-control" value="{{row[0]}}" required readonly></td>
+            <td><input type="text" id="material_name" name="material_name[]" class="form-control" value="{{row[1]}}" required readonly></td>
+            <td><input type="text" id="qty_in_stock" name="qty_in_stock[]" class="form-control" value="{{row[2]}}" required readonly></td>
+            <td><input type="text" id="qty_issued" name="qty_issued[]" class="form-control" value="" required></td>
           </tr>
 
           {% endfor %}
@@ -44,15 +42,22 @@
             <td></td>
             <td></td>
             <td><input type="submit" id="insert" name="insert" value="Save Qty" />
-            
           </tr>
         </div>
     </div>
+    <script>
+      $(document).ready(function(){
+
+          var new_input = '<div><input type="text" name="field[]" value=""/><a href="javascript:void(0);" class="remove-input" title="Remove input"><img src="/static/img/remove.png"/></a></div>';
+          var add_input_count = 1; 
+         
+          
+      });
+      </script>
 
     </table>
     </form>
   </div>
-   
-    {% endblock %}
 
-  
+{% endblock %}
+ 
