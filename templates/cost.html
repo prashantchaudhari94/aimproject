@@ -13,7 +13,7 @@
           <h3>Stock</h3>
 
 
-<form name="myForm" action="/material_issued" onsubmit="return validateForm()" method="post">
+<form name="myForm" action="/cost" onsubmit="return validateForm()" method="post">
   
 <table  >
             <thead >
@@ -28,22 +28,18 @@
                 </tr>
             </thead>    
             <tbody>
-                
-                {% for row in data %}    
-                <tr>
-                  <!--<td><a href=/open_enq?recid={{row[0]}}> {{row[0]}}  </a></td>
-                  <td><input type="radio" name="enqid_select" value={{row[0]}} >  </td>-->
+              {% for row in data %}
+              <tr>
 
-                    
-                    <td>{{row[0]}}</td>
-                    <td>{{row[1]}}</td>
-                    <td>{{row[2]}}</td>
-                    <td>{{row[3]}}</td>
-                                  
-                    
-                    <!-- <td><a href=/schedule?recid={{row[0]}}> Schedule Visit  </a></td>-->          
-                </tr>
-                {% endfor %}
+                              
+                <td>{{row[0]}}</td>
+                <td>{{row[1]}}</td>
+                <td>{{row[2]}}</td>
+                <td>{{row[3]}}</td>
+
+              </tr>
+              {% endfor %}
+                
             </tbody>
         </table>
         <br>
@@ -52,7 +48,7 @@
     </form>
 
 
-</form>
+
 
 
 {% endblock %}

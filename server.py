@@ -138,6 +138,7 @@ def material_select():
     
 @app.route('/material_issued',methods=['GET', 'POST'])
 def material_issued():
+     if 'loggedin' in session:
         cursor = mysql.connection.cursor()
         cur=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         message=""
@@ -146,20 +147,22 @@ def material_issued():
             qty_in_stock=request.form.getlist('qty_in_stock[]')
             qty_issued=request.form.getlist('qty_issued[]')
             print(material_id,qty_in_stock,qty_issued)
-            '''for value in qty_issued:
-                cur.execute("INSERT INTO cost ( qty_issued ) VALUES ( %s)",[value])
-                mysql.connection.commit()
-            cur.close()
-            message="successfully inserted"'''
-            '''for value in material_id,qty_in_stock,qty_issued:
-                cur.executemany("INSERT INTO cost ( material_id,total_stock,qty_issued ) VALUES ( %s,%s,%s)",([value]))
-                mysql.connection.commit()
-            cur.close()'''
             for index in range(len(material_id)):
                 cur.execute("INSERT INTO cost ( material_id,total_stock,qty_issued ) VALUES ( %s,%s,%s) ",(material_id[index],qty_in_stock[index],qty_issued[index]))
                 mysql.connection.commit()
             cur.close()
-        return render_template('cost.html')
+
+        return redirect(url_for('cost')) 
+
+@app.route('/cost', methods=['GET', 'POST'])
+def cost():
+    cursor = mysql.connection.cursor()
+    #recid = request.form['enqid_select']
+    cursor.execute("SELECT * FROM cost")
+    data = cursor.fetchall()
+    return render_template('cost.html', data=data)
+    
+
 @app.route('/page1/<my_var>')
 def page1(my_var):
     # but_id = str(request.form['myBut'])
