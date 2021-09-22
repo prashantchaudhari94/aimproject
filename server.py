@@ -139,19 +139,27 @@ def material_select():
 @app.route('/material_issued',methods=['GET', 'POST'])
 def material_issued():
         cursor = mysql.connection.cursor()
-        cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cur=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         message=""
         if request.method=='POST':
-            material_id = request.form.getlist('material_id')
-            qty_in_stock=request.form.getlist('qty_in_stock')
+            material_id = request.form.getlist('material_id[]')
+            qty_in_stock=request.form.getlist('qty_in_stock[]')
             qty_issued=request.form.getlist('qty_issued[]')
-            for value in material_id,qty_in_stock,qty_issued:
-                cursor.execute('INSERT INTO cost ( material_id, total_stock, qty_issued ) values ( %s,%s,%s)',[material_id,qty_in_stock,qty_issued])
+            print(material_id,qty_in_stock,qty_issued)
+            '''for value in qty_issued:
+                cur.execute("INSERT INTO cost ( qty_issued ) VALUES ( %s)",[value])
                 mysql.connection.commit()
-            cursor.close()
-            message="successfully inserted"
-        return render_template('cost.html',message=message)
-
+            cur.close()
+            message="successfully inserted"'''
+            '''for value in material_id,qty_in_stock,qty_issued:
+                cur.executemany("INSERT INTO cost ( material_id,total_stock,qty_issued ) VALUES ( %s,%s,%s)",([value]))
+                mysql.connection.commit()
+            cur.close()'''
+            for index in range(len(material_id)):
+                cur.execute("INSERT INTO cost ( material_id,total_stock,qty_issued ) VALUES ( %s,%s,%s) ",(material_id[index],qty_in_stock[index],qty_issued[index]))
+                mysql.connection.commit()
+            cur.close()
+        return render_template('cost.html')
 @app.route('/page1/<my_var>')
 def page1(my_var):
     # but_id = str(request.form['myBut'])

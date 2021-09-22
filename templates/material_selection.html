@@ -8,12 +8,9 @@
     <div class="col-sm-9 text-left">
 
       <h3>Material Selection: Enq Id: {{enq_id}}</h3> 
-      {% if message %}
-      <div class="alert alert - success">{{message}}</div>
-      {% endif %}
+     
 
       <form id="myForm3" action="/material_issued" method="post">
-        <!-- <form id="myForm3" method="GET" -->
 
         <table>
           <tr>
@@ -46,13 +43,7 @@
         </div>
     </div>
     <script>
-      $(document).ready(function(){
-
-          var new_input = '<div><input type="text" name="field[]" value=""/><a href="javascript:void(0);" class="remove-input" title="Remove input"><img src="/static/img/remove.png"/></a></div>';
-          var add_input_count = 1; 
-         
-          
-      });
+      
       </script>
 
     </table>
