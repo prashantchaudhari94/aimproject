@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template, request, url_for, redirect, session
 from flask_mysqldb import MySQL,MySQLdb
 import re
+import math
   
 app = Flask(__name__)
 
@@ -110,11 +111,14 @@ def disp_table():
 
 
 
-
-
 @app.route('/material_select', methods=['GET', 'POST'])
 def material_select():
     if 'loggedin' in session:
+        #perpage=10
+        #startat=page*perpage
+        #page = request.args.get('page', 1, type=int)
+        
+        ##
         cursor = mysql.connection.cursor()
         enq_id = request.form.get('enq_number')
         memo_id = request.form.get('memo_id')
@@ -126,11 +130,24 @@ def material_select():
         
         if "Material" in insert_but :
             #memo_list()
+            #cursor.execute('select material_id, material_name,stock_UM from material limit %s,%s;',(startat,perpage))
             cursor.execute('select material_id, material_name,stock_UM from material')
+            #material_data = list(cursor.fetchall())
             material_data = cursor.fetchall()
             enq_id = request.form.get('enq_number')   
             memo_id= request.form.get('memo_id')
-        return render_template('material_selection.html', material_data=material_data, enq_id=enq_id)
+
+            ##
+            page=request.args.get('page')
+            if page and page.isdigit():
+                page=int(page)
+            else:
+                page=1
+            pages=material_data.paginate(page=page,par_page=1)
+
+
+        
+            return render_template('material_selection.html', material_data=material_data, enq_id=enq_id,pages=pages)
     else:
         return redirect(url_for('login'))
 
