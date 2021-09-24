@@ -109,16 +109,24 @@ def disp_table():
     else:
         return redirect(url_for('login'))
 
+#######
+'''@app.route('/images', defaults={'page':1})
+@app.route('/images/page/<int:page>')
+def abc(page):
+    perpage=20
+    startat=page*perpage
+    db = mysql.connect('localhost', 'root', 'password', 'img')
+    cursor = db.cursor()
+    cursor.execute('SELECT Id,Title,Img FROM image limit %s, %s;', (startat,perpage))
+    data = list(cursor.fetchall())
+'''
 
+###
 
-@app.route('/material_select', methods=['GET', 'POST'])
-def material_select():
+@app.route('/material_select',defaults={'page':1}, methods=['GET', 'POST'])
+@app.route('/material_select/page/<int:page>')
+def material_select(page):
     if 'loggedin' in session:
-        #perpage=10
-        #startat=page*perpage
-        #page = request.args.get('page', 1, type=int)
-        
-        ##
         cursor = mysql.connection.cursor()
         enq_id = request.form.get('enq_number')
         memo_id = request.form.get('memo_id')
@@ -127,27 +135,34 @@ def material_select():
         if not insert_but :
             insert_but="a"                   #This is dummy value. To ensure routing, if not calling from 'insert' button selection. 
         print("but selected:", insert_but, ",",enq_id)
-        
+        perpage=10
+        startat=page*perpage
         if "Material" in insert_but :
             #memo_list()
-            #cursor.execute('select material_id, material_name,stock_UM from material limit %s,%s;',(startat,perpage))
-            cursor.execute('select material_id, material_name,stock_UM from material')
-            #material_data = list(cursor.fetchall())
-            material_data = cursor.fetchall()
+            cursor.execute('select material_id, material_name,stock_UM from material limit %s,%s;',(startat,perpage))
+            #cursor.execute('select material_id, material_name,stock_UM from material')
+            material_data = list(cursor.fetchall())
+            #material_data = cursor.fetchall()
             enq_id = request.form.get('enq_number')   
             memo_id= request.form.get('memo_id')
 
-            ##
-            page=request.args.get('page')
-            if page and page.isdigit():
-                page=int(page)
-            else:
-                page=1
-            pages=material_data.paginate(page=page,par_page=1)
-
-
+        perpage=10
+        startat=page*perpage
+        page=request.args.get("page")
+        if (page==1):
+            prev="#"   
+            next="/material_select?number=" + str(page+1)
+        elif(page==last):
+            prev="/material_select?number=" + str(page-1)
+            next="#"   
+        else:
+            prev="/material_select?number=" + str(page-1)
+            next="/material_select?number=" + str(page+1)
         
-            return render_template('material_selection.html', material_data=material_data, enq_id=enq_id,pages=pages)
+        ##
+        
+        
+            return render_template('material_selection.html', material_data=material_data, enq_id=enq_id)
     else:
         return redirect(url_for('login'))
 
