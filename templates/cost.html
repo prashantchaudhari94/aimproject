@@ -25,6 +25,7 @@
                     <th >Material Id</th>
                     <th>Total Stock</th>
                     <th>Quantity Issued</th>
+                    <th>Current Stock</th>
                 </tr>
             </thead>    
             <tbody>
@@ -36,8 +37,17 @@
                 <td>{{row[1]}}</td>
                 <td>{{row[2]}}</td>
                 <td>{{row[3]}}</td>
+                <td>{{row[4]}}</td>
 
               </tr>
+
+              {% endfor %}
+              {% for row in current_data %}
+              <tr>
+                <td>{{row[4]}}</td>
+
+              </tr>
+              
               {% endfor %}
                 
             </tbody>
