@@ -210,12 +210,12 @@ def material_issued():
         message=""
         if request.method=='POST':
             material_id = request.form.getlist('material_id[]')
-            memo_id = request.form.get('memo_number[]')
+            memo_id = request.form.get('memo_id')
             qty_in_stock=request.form.getlist('qty_in_stock[]')
             qty_issued=request.form.getlist('qty_issued[]')
             print(material_id,memo_id,qty_in_stock,qty_issued)
             for index in range(len(material_id)):
-                cur.execute("INSERT INTO cost ( material_id,total_stock,qty_issued,memo_id) VALUES ( %s,%s,%s, %s) ", (material_id[index],qty_in_stock[index],qty_issued[index],memo_id))
+                cur.execute("INSERT INTO cost ( material_id,total_stock,qty_issued) VALUES ( %s,%s, %s) ", (material_id[index],qty_in_stock[index],qty_issued[index]))
                 stock=int(qty_in_stock[index])-int(qty_issued[index])
                 id=material_id[index]
                 print(stock)
