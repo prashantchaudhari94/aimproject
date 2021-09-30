@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, url_for, redirect, session
 from flask_mysqldb import MySQL,MySQLdb
 import re
 import math
+from flask_paginate import Pagination, get_page_parameter
   
 app = Flask(__name__)
 
@@ -175,6 +176,9 @@ def material_select(page):
 
 def material_select():
     if 'loggedin' in session:
+        page = request.args.get(get_page_parameter(), type=int, default=1)
+        limit=2
+        offset=page * limit-limit
         cursor = mysql.connection.cursor()
         enq_id = request.form.get('enq_number')
         memo_id = request.form.get('memo_number')
@@ -192,10 +196,15 @@ def material_select():
             #cursor.execute("SELECT material.material_id, material.material_name,material.stock_UM,material.stock_UM - cost.qty_issued AS Difference FROM material LEFT JOIN cost ON material.material_id = cost.material_id ORDER BY current_stock DESC")
             #material_data = list(cursor.fetchall())
             material_data = cursor.fetchall()
-            
+            total=len(material_data)
             enq_id = request.form.get('enq_number')   
             memo_id= request.form.get('memo_number')
-        return render_template('material_selection.html', material_data=material_data, enq_id=enq_id,memo_id=memo_id)
+            cur=mysql.connection.cursor()
+            cur.execute("select material_id, material_name,stock_UM from material ORDER By material_id DESC LIMIT % OFFSET %",(limit,offset)) 
+            data=cur.fetchall()
+        cur.close()  
+        pagination = Pagination(page=page, per_page=limit, total=total, record_name='material_select'  )
+        return render_template('material_selection.html', pagination=pagination, material_data=material_data, enq_id=enq_id,memo_id=memo_id)
     else:
         return redirect(url_for('login'))
 
@@ -391,10 +400,11 @@ def open_enq():
                 for row in data_enqid:
                     
                     enquiry_no_id = row[3]
+                    memo_id=row[0]
                     print ("enq_id = ", enquiry_no_id, memo_data)
                     #return ("Page with work memo values.",enquiry_no_id)
                 if not len(data_enqid) is 0 :                     #NOT 0. memo already exists. only show memo
-                    return render_template('memo_display.html',memo_data=data_enqid, party_name=party_name, recid=recid) 
+                    return render_template('memo_display.html',memo_data=data_enqid, party_name=party_name, recid=recid,memo_id=memo_id) 
                 else :                                 # New memo. Collect values
                     return render_template('memo_form.html', data=data, recid=recid, party_name=party_name, address_loading=address_loading, address_unloading=address_unloading, visit_no = visit_no, today1=today1 )             
             except :
