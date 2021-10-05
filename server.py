@@ -170,6 +170,9 @@ def material_select(page):
         return redirect(url_for('login'))'''
 
 
+
+
+
 #pagination
 
 @app.route('/material_select', methods=['GET', 'POST'])
@@ -199,6 +202,11 @@ def material_select():
             total=len(material_data)
             enq_id = request.form.get('enq_number')   
             memo_id= request.form.get('memo_number')
+            ##
+            qty_in_stock=request.form.getlist('qty_in_stock[]')
+            qty_issued=request.form.getlist('qty_issued[]')
+            print(qty_in_stock,qty_issued)
+            ##
             #cur=mysql.connection.cursor()
             #cur.execute("select material_id, material_name,stock_UM from material ORDER By material_id DESC LIMIT % OFFSET %",(limit,offset)) 
             #data=cur.fetchall()
@@ -224,27 +232,36 @@ def material_issued():
             memo_id = request.form.getlist('memo_id[]')
             qty_in_stock=request.form.getlist('qty_in_stock[]')
             qty_issued=request.form.getlist('qty_issued[]')
-            print(request.form.get('memo_id[]'))
-            print(material_id, memo_id, qty_in_stock,qty_issued)
-            for index in range(len(material_id)):
-                cur.execute("INSERT INTO cost ( material_id,material_name,memo_id,total_stock,qty_issued) VALUES (%s, %s,%s,%s, %s) ", (material_id[index],material_name[index],memo_id[index],qty_in_stock[index],qty_issued[index]))
-                stock=int(qty_in_stock[index])-int(qty_issued[index])
-                id=material_id[index]
-                print(stock)
-                cur.execute("UPDATE cost SET current_stock="+str(stock)+" WHERE material_id="+str(id)) 
-                data=cur.fetchall()     
-                mysql.connection.commit()
-            cur.close()
-        return redirect(url_for('cost')) 
- 
+            
+            for i, index  in enumerate(material_name):
+                if(int(qty_issued[i]) > int(qty_in_stock[i])):
+                    return("Entered quantity is greater than available stock")
+
+
+            #if qty_in_stock <= qty_issued:
+
+            for  index in range(len(material_id)):
+                        if (int(qty_issued[index]) > int(qty_in_stock[index])):
+                            print([material_name[i],"Entered quantity is greater than available stock"])
+                        else:   
+                            cur.execute("INSERT INTO cost ( material_id,material_name,memo_id,total_stock,qty_issued) VALUES (%s, %s,%s,%s, %s) ", (material_id[index],material_name[index],memo_id[index],qty_in_stock[index],qty_issued[index]))
+                            stock=int(qty_in_stock[index])-int(qty_issued[index])
+                            id=material_id[index]
+                            print(stock)
+                            cur.execute("UPDATE cost SET current_stock="+str(stock)+" WHERE material_id="+str(id)) 
+                            data=cur.fetchall()     
+                            mysql.connection.commit()
+
+            cur.close()  
+            return redirect(url_for('cost'))
 
 @app.route('/cost', methods=['GET', 'POST'])
 def cost():
 
     cursor = mysql.connection.cursor()
     memo_id= request.form.get('memo_number')
-    cursor.execute("select cost.*, memo.memo_id from cost left join memo ON cost.memo_id = memo.memo_id;")
-    #cursor.execute("SELECT * FROM cost ")
+    #cursor.execute("select cost.*, memo.memo_id from cost left join memo ON cost.memo_id = memo.memo_id;")
+    cursor.execute("SELECT * FROM cost ")
     data = cursor.fetchall()
     return render_template('cost.html', data=data,memo_id=memo_id)
     
