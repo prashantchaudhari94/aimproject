@@ -79,7 +79,6 @@ def register():
 
 @app.route('/disp_table', methods=['GET', 'POST'])
 def disp_table():
-
     if 'loggedin' in session:
         cursor = mysql.connection.cursor()
         insert_but=""       
@@ -90,7 +89,7 @@ def disp_table():
         print("but selected", insert_but)
 
         cursor.execute("select enquiry1.*, visit.visit_no_id from enquiry1 left join visit ON enquiry1.enquiry_no_id = visit.enquiry_no_id;")
-        
+
         data = cursor.fetchall()
         
 ###########
@@ -172,13 +171,14 @@ def material_select(page):
 
 
 #pagination
+
 @app.route('/material_select', methods=['GET', 'POST'])
 
 def material_select():
     if 'loggedin' in session:
-        page = request.args.get(get_page_parameter(), type=int, default=1)
-        limit=2
-        offset=page * limit-limit
+        #page = request.args.get(get_page_parameter(), type=int, default=1)
+        #limit=2
+        #offset=page * limit-limit
         cursor = mysql.connection.cursor()
         enq_id = request.form.get('enq_number')
         memo_id = request.form.get('memo_number')
@@ -199,12 +199,12 @@ def material_select():
             total=len(material_data)
             enq_id = request.form.get('enq_number')   
             memo_id= request.form.get('memo_number')
-            cur=mysql.connection.cursor()
-            cur.execute("select material_id, material_name,stock_UM from material ORDER By material_id DESC LIMIT % OFFSET %",(limit,offset)) 
-            data=cur.fetchall()
-        cur.close()  
-        pagination = Pagination(page=page, per_page=limit, total=total, record_name='material_select'  )
-        return render_template('material_selection.html', pagination=pagination, material_data=material_data, enq_id=enq_id,memo_id=memo_id)
+            #cur=mysql.connection.cursor()
+            #cur.execute("select material_id, material_name,stock_UM from material ORDER By material_id DESC LIMIT % OFFSET %",(limit,offset)) 
+            #data=cur.fetchall()
+       #cur.close()  
+        #pagination = Pagination(page=page, per_page=limit, total=total, record_name='material_select'  )
+        return render_template('material_selection.html', material_data=material_data, enq_id=enq_id,memo_id=memo_id)
     else:
         return redirect(url_for('login'))
 
@@ -218,13 +218,16 @@ def material_issued():
         cur=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         message=""
         if request.method=='POST':
+            print(request.form)
             material_id = request.form.getlist('material_id[]')
-            memo_id = request.form.get('memo_id')
+            material_name=request.form.getlist('material_name[]')
+            memo_id = request.form.getlist('memo_id[]')
             qty_in_stock=request.form.getlist('qty_in_stock[]')
             qty_issued=request.form.getlist('qty_issued[]')
-            print(material_id,memo_id,qty_in_stock,qty_issued)
+            print(request.form.get('memo_id[]'))
+            print(material_id, memo_id, qty_in_stock,qty_issued)
             for index in range(len(material_id)):
-                cur.execute("INSERT INTO cost ( material_id,total_stock,qty_issued) VALUES ( %s,%s, %s) ", (material_id[index],qty_in_stock[index],qty_issued[index]))
+                cur.execute("INSERT INTO cost ( material_id,material_name,memo_id,total_stock,qty_issued) VALUES (%s, %s,%s,%s, %s) ", (material_id[index],material_name[index],memo_id[index],qty_in_stock[index],qty_issued[index]))
                 stock=int(qty_in_stock[index])-int(qty_issued[index])
                 id=material_id[index]
                 print(stock)
@@ -237,10 +240,13 @@ def material_issued():
 
 @app.route('/cost', methods=['GET', 'POST'])
 def cost():
+
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM cost")
+    memo_id= request.form.get('memo_number')
+    cursor.execute("select cost.*, memo.memo_id from cost left join memo ON cost.memo_id = memo.memo_id;")
+    #cursor.execute("SELECT * FROM cost ")
     data = cursor.fetchall()
-    return render_template('cost.html', data=data)
+    return render_template('cost.html', data=data,memo_id=memo_id)
     
 
 @app.route('/page1/<my_var>')
@@ -327,6 +333,7 @@ def insert_table():
         cursor = mysql.connection.cursor()
         name = request.form['name']
         alist = request.form['alist']
+
         cursor.execute( 'INSERT INTO visit (name, alist, enquiry_no_id ) values (% s, %s)', (name, alist))
         mysql.connection.commit()
         return ('Data in table- success')

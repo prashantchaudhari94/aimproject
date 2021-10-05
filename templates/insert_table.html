@@ -50,7 +50,7 @@
           </tr>
           <tr>
             <td>Household Size (Sq Ft)</td>
-            <td><input type="text" name="house_area" class="form-control" value="" required  /></td>
+            <td><input type="text" name="house_area" class="form-control" onkeypress="isInputNumber(event)" value="" required  /></td>
           </tr>
 
           <td>Prefered Visit Date</td>
@@ -58,11 +58,11 @@
           </tr>
           <tr>
             <td>Floor Number From</td>
-            <td><input type="text" name="floor_no_load" class="form-control" value="" required/></td>
+            <td><input type="text" name="floor_no_load" class="form-control" onkeypress="isInputNumber(event)"  value="" required/></td>
           </tr>
           <tr>
             <td>Floor Number To</td>
-            <td><input type="text" name="floor_no_unload" class="form-control" value="" required /></td>
+            <td><input type="text" name="floor_no_unload" class="form-control" onkeypress="isInputNumber(event)"  value="" required /></td>
           </tr>
           <tr>
             <td>Lift available at Loading site</td>
@@ -131,6 +131,18 @@
     today = yyyy+'-'+mm+'-'+dd;
     document.getElementById("datefield").setAttribute("min", today);
     document.getElementById("datehide").setAttribute("min", today);
+
+    function isInputNumber(evt){
+                
+                var ch = String.fromCharCode(evt.which);
+                
+                if(!(/[0-9]/.test(ch))){
+                    evt.preventDefault();
+                }
+                
+            }
+
+            
     </script>
   </div>
 </div>
