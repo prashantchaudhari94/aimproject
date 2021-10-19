@@ -43,11 +43,11 @@
         <tbody>
           {% for row in data %}
           <tr>
-            <td><input type="radio" name="enqid_select" value={{row[3]}}> </td>
+          
+            <td><input type="radio" name="memo_number" value={{row[0]}}> </td>
             
             <td><a href=/material_select?recid={{row[3]}}> </a>{{row[0]}}</td>
             
-
 
             <td>{{row[1]}}</td>
             <td>{{row[2]}}</td>
@@ -73,9 +73,9 @@
         </tbody>
       </table>
       <br>
-      <!--<tr>
+      
         <td><input type="submit" id="insert" name="insert" value="Material Select" ></td>
-      </tr>-->
+      
       
 
   </div>
@@ -96,4 +96,3 @@
   </script>
   {% endblock %}
             
-          

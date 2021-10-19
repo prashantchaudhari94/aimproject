@@ -34,9 +34,7 @@ def login():
         #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM user WHERE binary username = %s AND  binary password = %s' , (username, password, ))
-        account = cursor.fetchone()
-
-        
+        account = cursor.fetchone()        
         if account:
             session['loggedin'] = True
             session['id'] = account[0]
@@ -111,77 +109,22 @@ def disp_table():
         return redirect(url_for('login'))
 
 #######
-'''@app.route('/images', defaults={'page':1})
-@app.route('/images/page/<int:page>')
-def abc(page):
-    perpage=20
-    startat=page*perpage
-    db = mysql.connect('localhost', 'root', 'password', 'img')
-    cursor = db.cursor()
-    cursor.execute('SELECT Id,Title,Img FROM image limit %s, %s;', (startat,perpage))
-    data = list(cursor.fetchall())
-'''
+
 
 ###
  
-'''@app.route('/material_select',defaults={'page':1}, methods=['GET', 'POST'])
-@app.route('/material_select/page/<int:page>')
-def material_select(page):
-    if 'loggedin' in session:
-        cursor = mysql.connection.cursor()
-        enq_id = request.form.get('enq_number')
-        memo_id = request.form.get('memo_id')
-        insert_but=""                        #When disp_list called directly there is no value to insert_but (gives error)
-        insert_but=request.form.get('insert')
-        if not insert_but :
-            insert_but="a"                   #This is dummy value. To ensure routing, if not calling from 'insert' button selection. 
-        print("but selected:", insert_but, ",",enq_id)
 
-        perpage=5
-        startat=page*perpage
-
-        if "Material" in insert_but :
-            #memo_list()
-            cursor.execute('select material_id, material_name,stock_UM from material limit %s,%s;',(startat,perpage))
-            #cursor.execute('select material_id, material_name,stock_UM from material')
-            material_data = list(cursor.fetchall())
-            #material_data = cursor.fetchall()
-            enq_id = request.form.get('enq_number')   
-            memo_id= request.form.get('memo_id')'''
 
         
-'''page=request.args.get("page")
-        if (page==1):
-            prev="#"   
-            next="/material_select?number=" + str(page+1)
-        elif(page==last):
-            prev="/material_select?number=" + str(page-1)
-            next="#"   
-        else:
-            prev="/material_select?number=" + str(page-1)
-            next="/material_select?number=" + str(page+1)
         
-        ##
-        
-
-        
-     return render_template('material_selection.html', material_data=material_data, enq_id=enq_id)
-    else:
-        return redirect(url_for('login'))'''
-
-
 
 
 
 #pagination
 
 @app.route('/material_select', methods=['GET', 'POST'])
-
 def material_select():
     if 'loggedin' in session:
-        #page = request.args.get(get_page_parameter(), type=int, default=1)
-        #limit=2
-        #offset=page * limit-limit
         cursor = mysql.connection.cursor()
         enq_id = request.form.get('enq_number')
         memo_id = request.form.get('memo_number')
@@ -191,34 +134,42 @@ def material_select():
         if not insert_but :
             insert_but="a"                   #This is dummy value. To ensure routing, if not calling from 'insert' button selection. 
         print("but selected:", insert_but, ",",enq_id)
+        #####
+        '''material_id = request.form.getlist('material_id[]')
+        material_name=request.form.getlist('material_name[]')
+        memo_id = request.form.getlist('memo_id[]')
+        qty_in_stock=request.form.getlist('qty_in_stock[]')
+        qty_issued=request.form.getlist('qty_issued[]')'''
 
         if "Material" in insert_but :
-            #memo_list()
-            #cursor.execute('select material_id, material_name,stock_UM from material limit %s,%s;',(startat,perpage))
             cursor.execute('select material_id, material_name,stock_UM from material')
-            #cursor.execute("SELECT material.material_id, material.material_name,material.stock_UM,material.stock_UM - cost.qty_issued AS Difference FROM material LEFT JOIN cost ON material.material_id = cost.material_id ORDER BY current_stock DESC")
-            #material_data = list(cursor.fetchall())
             material_data = cursor.fetchall()
             total=len(material_data)
             enq_id = request.form.get('enq_number')   
             memo_id= request.form.get('memo_number')
-            ##
-            qty_in_stock=request.form.getlist('qty_in_stock[]')
-            qty_issued=request.form.getlist('qty_issued[]')
-            print(qty_in_stock,qty_issued)
-            ##
-            #cur=mysql.connection.cursor()
-            #cur.execute("select material_id, material_name,stock_UM from material ORDER By material_id DESC LIMIT % OFFSET %",(limit,offset)) 
-            #data=cur.fetchall()
-       #cur.close()  
-        #pagination = Pagination(page=page, per_page=limit, total=total, record_name='material_select'  )
-        return render_template('material_selection.html', material_data=material_data, enq_id=enq_id,memo_id=memo_id)
-    else:
-        return redirect(url_for('login'))
-
-
-
+            msg = ''
     
+        '''for  index in range(len(material_id)):
+            if (int(qty_issued[index]) > int(qty_in_stock[index])):
+                msg="Entered quantity is greater than available stock"
+                #print([material_name[i],"Entered quantity is greater than available stock"])
+            else:
+                cur.execute("INSERT INTO cost ( material_id,material_name,memo_id,total_stock,qty_issued) VALUES (%s, %s,%s,%s, %s) ", (material_id[index],material_name[index],memo_id[index],qty_in_stock[index],qty_issued[index]))
+                stock=int(qty_in_stock[index])-int(qty_issued[index])
+                id=material_id[index]
+                print(stock)
+                cur.execute("UPDATE cost SET current_stock="+str(stock)+" WHERE material_id="+str(id)) 
+                data=cur.fetchall()     
+                mysql.connection.commit()
+
+                cur.close()  
+            return redirect(url_for('cost'))'''
+
+        return render_template('material_selection.html', material_data=material_data, enq_id=enq_id,memo_id=memo_id)
+
+
+
+
 @app.route('/material_issued',methods=['GET', 'POST'])
 def material_issued():
      if 'loggedin' in session:
@@ -233,31 +184,36 @@ def material_issued():
             qty_in_stock=request.form.getlist('qty_in_stock[]')
             qty_issued=request.form.getlist('qty_issued[]')
             
-            for i, index  in enumerate(material_name):
-                if(int(qty_issued[i]) > int(qty_in_stock[i])):
-                    return("Entered quantity is greater than available stock")
+            #for i, index  in enumerate(material_name):
+              #if(int(qty_issued[i]) < int(qty_in_stock[i])):
+                    #flash('Looks like you have changed your name!')
+                    #return("Entered quantity is greater than available stock")
 
 
-            #if qty_in_stock <= qty_issued:
+           #if qty_in_stock <= qty_issued:
+
 
             for  index in range(len(material_id)):
-                        if (int(qty_issued[index]) > int(qty_in_stock[index])):
-                            print([material_name[i],"Entered quantity is greater than available stock"])
-                        else:   
-                            cur.execute("INSERT INTO cost ( material_id,material_name,memo_id,total_stock,qty_issued) VALUES (%s, %s,%s,%s, %s) ", (material_id[index],material_name[index],memo_id[index],qty_in_stock[index],qty_issued[index]))
-                            stock=int(qty_in_stock[index])-int(qty_issued[index])
-                            id=material_id[index]
-                            print(stock)
-                            cur.execute("UPDATE cost SET current_stock="+str(stock)+" WHERE material_id="+str(id)) 
-                            data=cur.fetchall()     
-                            mysql.connection.commit()
+                        #if (int(qty_issued[index]) > int(qty_in_stock[index])):
+                            #print([material_name[index],"Entered quantity is greater than available stock"])
+                        #else:  
+                        cur.execute("INSERT INTO cost ( material_id,material_name,memo_id,total_stock,qty_issued) VALUES (%s, %s,%s,%s, %s) ", (material_id[index],material_name[index],memo_id[index],qty_in_stock[index],qty_issued[index]))
+                        stock=int(qty_in_stock[index])-int(qty_issued[index])
+                        id=material_id[index]
+                        print(stock)
+                        #update in material table.
+                        cur.execute("UPDATE material SET current_st="+str(stock)+" WHERE material_id="+str(id))
+                        ####
+                        cur.execute("UPDATE cost SET current_stock="+str(stock)+" WHERE material_id="+str(id))
+                        data=cur.fetchall()     
+                        mysql.connection.commit()
 
             cur.close()  
             return redirect(url_for('cost'))
+            
 
 @app.route('/cost', methods=['GET', 'POST'])
 def cost():
-
     cursor = mysql.connection.cursor()
     memo_id= request.form.get('memo_number')
     #cursor.execute("select cost.*, memo.memo_id from cost left join memo ON cost.memo_id = memo.memo_id;")
@@ -458,10 +414,11 @@ def quot_tracker():
 def workorder_tracker():
     if 'loggedin' in session:
         cursor = mysql.connection.cursor()
+        memo_id= request.form.get('memo_number')
         cursor.execute("SELECT * FROM memo")
         data = cursor.fetchall()
         
-        return render_template('workorder_tracker.html',data=data)
+        return render_template('workorder_tracker.html',data=data,memo_id=memo_id)
     else:
         return redirect(url_for('login'))
 

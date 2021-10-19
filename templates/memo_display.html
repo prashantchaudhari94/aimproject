@@ -9,7 +9,7 @@
     </div>
     <div class="col-sm-9 text-left">
 
-      <h3>Work Order already raised</h3>
+      <h3>Work Order already raised for  Work Order NO: {{memo_id}}</h3>
 
       <form id="myForm" action="/material_select" method="post">
         {% for row in memo_data %}
@@ -32,6 +32,7 @@
           </tr>
           <tr>
             <td>Memo Number</td>
+            <!--name=memo_number-->
             <td><input type="text" name="memo_number" class="form-control" value={{memo_id}} readonly /> </td>
           </tr>
           <tr>
